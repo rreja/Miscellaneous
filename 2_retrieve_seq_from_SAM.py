@@ -64,7 +64,7 @@ def retrieve_seq_from_SAM(dict_fimo,options,out,outfile):
             #print motif_start, motif_end, tag_start, tag_end, strandedness
             motif = check_strand_and_perform_operation(strandedness,motif_start,motif_end,tag_start,tag_end,seq)
             if motif != 0:
-                out.write(fimo_motif+"\t"+motif+"\t"+pval+"\t"+cols[5]+"\t"+cols[4]+"\n")
+                out.write(pval+"\t"+fimo_motif+"\t"+motif+"\t"+cols[5]+"\t"+cols[4]+"\n")
     print "Sucessfully written the output. Your output is in"+os.path.dirname(outfile)
             
 def check_strand_and_perform_operation(strandedness,motif_start,motif_end,tag_start,tag_end,seq):

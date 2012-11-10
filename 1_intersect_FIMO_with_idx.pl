@@ -50,8 +50,8 @@ while((my $filename = readdir(IDX))){
     }
     
     # creating an output folder for each index file present in the folder.
-    unless(-d $idxdir."output_intersect/"){
-    system("mkdir ".$idxdir."output_intersect/");
+    unless(-d $idxdir."output_".$base_name."/"){
+    system("mkdir ".$idxdir."output_".$base_name."/");
     }
     print "\nINFO: Index file detected as input! Abort if incorrect\n";
     print "\nINFO: Input tag/index file = ".$filename;
@@ -81,7 +81,7 @@ while((my $filename = readdir(IDX))){
     while( (my $refname = readdir(REF))){ # Splitting each reference file into sense and anti-sense files.
         next if(check_extension($refname) != 1);
         my $ref_basename = return_basename($refname);
-        print "INFO: Reference file = ".$refname."\nINFO: Splitting it into sense and antisesne files\n";
+        print "INFO: Reference file = ".$refname."\n";
         open IN, $refdir.$refname || die "File not found";
         open OUT2,">".$idxdir."tmp/ref.gff" || die "File not found";
         #open OUT2,">".$idxdir."tmp/antisense.tmp" || die "File not found"; 
@@ -114,11 +114,11 @@ while((my $filename = readdir(IDX))){
     # Running intersectBed on the fwd/sense, rev/sense, fwd/antisense and rev/antisense and then joining fwd/sense with rev/antisense and rev/sense with fwd/antisense.
     # Feature with no tags would have "0" as overlap and features with tags would have >0 as overlap.
     #print "/usr/local/bin/closestBed -a ".$idxdir."fwd.gff -b ".$refdir."sense.gff  >".$idxdir."output/fwd_sense.txt\n";
-    print "INFO: Running intersectBed on the generated files\n";
-    system("/usr/local/bin/intersectBed -wao  -a ".$idxdir."tmp/ref.gff -b ".$idxdir."tmp/tags.gff  >".$idxdir."output_intersect/intersect_output.txt");
+    print "\nINFO: Running intersectBed on the generated files\n";
+    system("/usr/local/bin/intersectBed -wao  -a ".$idxdir."tmp/ref.gff -b ".$idxdir."tmp/tags.gff  >".$idxdir."output_".$base_name."/intersect_output_".$ref_basename.".txt");
     
   } # end of the loop over reference directory.
-    print "INFO: Your output is present in ".$idxdir."output_intersect/\n";
+    print "INFO: Your output is present in ".$idxdir."output_".$base_name."\n";
     system("rm -fr ".$idxdir."tmp/");
       
 }
