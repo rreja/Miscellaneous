@@ -1,0 +1,6 @@
+#Sense strand
+NS=-110:-90;
+DS=-400:-200;DS=0:400;
+#Antisense strand
+NA=-150:-90;
+DA=-400:-200;DA=0:400;
