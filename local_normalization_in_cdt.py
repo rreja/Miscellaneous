@@ -11,7 +11,6 @@ def process_files(sense, antisense, options,output_folder):
     antisense_dict,up,down,bins = parse_file(input2)
     outfile = os.path.join(output_folder, os.path.basename(sense).split('.')[0] + "_normTag.txt")
     out = open(outfile,"w")
-    out.write("Identifier\tNumerator_sum\tDenominator_sum\tRatio\n")
     ranges = open(options.rangeFile, "rt")
     for line in ranges:
         if line.startswith("#"):
@@ -39,7 +38,7 @@ def process_files(sense, antisense, options,output_folder):
             ratio = float(numerator)/denominator
         else:
             ratio = "NA"
-        out.write(k+"\t"+str(numerator)+"\t"+str(denominator)+"\t"+str(ratio)+"\n")
+        out.write(k+"\t"+str(ratio)+"\n")
     print "Output of "+os.path.basename(sense)+" and "+os.path.basename(antisense)+" written to the output folder "+output_folder
 
 # Execute this function when only one strand is present. like tags aligned to peak-pair midpoint    
@@ -48,7 +47,6 @@ def process_files_nostrand(f,options,output_folder):
     fdict,up,down,bins = parse_file(input)
     outfile = os.path.join(output_folder, os.path.basename(f).split('.')[0] + "_normTag.txt")
     out = open(outfile,"w")
-    out.write("Identifier\tNumerator_sum_per_base\tDenominator_sum_per_base\tRatio\n")
     ranges = open(options.rangeFile, "rt")
     for line in ranges:
         if line.startswith("#"):
@@ -68,7 +66,7 @@ def process_files_nostrand(f,options,output_folder):
             ratio = float(numerator)/denominator
         else:
             ratio = "NA"
-        out.write(k+"\t"+str(numerator)+"\t"+str(denominator)+"\t"+str(ratio)+"\n")
+        out.write(k+"\t"+str(ratio)+"\n")
     print "Output of "+os.path.basename(f)+" written to the output folder "+output_folder
          
     
@@ -82,16 +80,14 @@ def sum_by_range(dicti,RG):
     for i in RG:
         tmp = i.split("=")
         rang = tmp[1].split(":")
-        length = abs(int(rang[1]) - int(rang[0]))
         for key,val in dicti.items():
             s = 0
-            # Look at each line of the cdt file where val is a dictionary of the form coord=>tag  -40=>3, 30=>5.
             for k,v in val.items():
                 if k > int(rang[0]) and k < int(rang[1]):
                     s = s+ int(v)
                 else:
                     s = s+0
-            tmpdict[key] = tmpdict[key]+ (float(s)/length)
+            tmpdict[key] = tmpdict[key]+s
     return(tmpdict)
                     
          
