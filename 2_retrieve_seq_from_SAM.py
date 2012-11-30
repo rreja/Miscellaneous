@@ -7,7 +7,7 @@ def process_file(infile,options):
     dict_fimo = {}
     outfile = os.path.join(os.path.dirname(infile),"motif_variation_information.txt")
     out = open(outfile,"w")
-    out.write("Motif_from_fimo\tMotif_from_BAM\tpval\tCIGAR\tQuality\n")
+    out.write("pval\tMotif_from_fimo\tMotif_from_BAM\tCIGAR\tQuality\n")
     input = open(infile,'rt')
     for line in input:
         if line.startswith("#"):
