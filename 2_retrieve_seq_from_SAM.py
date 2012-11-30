@@ -7,13 +7,15 @@ def process_file(infile,options):
     dict_fimo = {}
     outfile = os.path.join(os.path.dirname(infile),"motif_variation_information.txt")
     out = open(outfile,"w")
-    out.write("pval\tMotif_from_fimo\tMotif_from_BAM\tCIGAR\tQuality\n")
+    out.write("FIMO_motif_chr\tFIMO_motif_start\tFIMO_motif_strand\tMotif_from_fimo\tpvalue\tMotif_from_BAM\tCIGAR\tQuality\n")
     input = open(infile,'rt')
     for line in input:
         if line.startswith("#"):
             continue
         cols = line.rstrip().split("\t")
         fimo_motif,pval = extract_fimo_motif(cols[8])
+        # Appending the chr, start,strand of fimo motif to be used later to find out which motifs were pulled up.
+        motif_extra_info = cols[0]+"\t"+cols[3]+"\t"+cols[6]
         motif_start = int(cols[7].split("-")[0])
         motif_end = int(cols[7].split("-")[1])
         motif_length = motif_end - motif_start  #int(cols[4]) - int(cols[3]) # Storing the actual motif co-ordinates in the 8th col.
@@ -23,7 +25,8 @@ def process_file(infile,options):
         if int(cols[12]) == -1 or abs(int(cols[18])) > 30: # If the tag does not lie near ref point or the d
             continue
         else:
-            dict_fimo[cols[9]+"\t"+cols[12]+"\t"+cols[15]] = str(motif_start)+"\t"+str(motif_length)+"\t"+cols[6]+cols[15]+"\t"+fimo_motif+"\t"+pval # dict key is composed of tag coordinates that matches the motif vicinity.
+            # dict key is composed of tag coordinates that matches the motif vicinity. value is composed of fimo_motif start, length,(with if the motif is ++,+-,-+,--),ref_motif,pval and extra info
+            dict_fimo[cols[9]+"\t"+cols[12]+"\t"+cols[15]] = str(motif_start)+"\t"+str(motif_length)+"\t"+cols[6]+cols[15]+"\t"+fimo_motif+"\t"+pval+"\t"+motif_extra_info 
             
     retrieve_seq_from_SAM(dict_fimo,options,out,outfile)
 
@@ -61,10 +64,11 @@ def retrieve_seq_from_SAM(dict_fimo,options,out,outfile):
             motif_end          = motif_start + abs(int((dict_fimo[key].split("\t"))[1]))
             fimo_motif  = (dict_fimo[key].split("\t"))[3]
             pval = (dict_fimo[key].split("\t"))[4]
+            extra_info = dict_fimo[key].split("\t")
             #print motif_start, motif_end, tag_start, tag_end, strandedness
             motif = check_strand_and_perform_operation(strandedness,motif_start,motif_end,tag_start,tag_end,seq)
             if motif != 0:
-                out.write(pval+"\t"+fimo_motif+"\t"+motif+"\t"+cols[5]+"\t"+cols[4]+"\n")
+                out.write(extra_info[5]+"\t"+extra_info[6]+"\t"+extra_info[7]+"\t"+fimo_motif+"\t"+pval+"\t"+motif+"\t"+cols[5]+"\t"+cols[4]+"\n")
     print "Sucessfully written the output. Your output is in"+os.path.dirname(outfile)
             
 def check_strand_and_perform_operation(strandedness,motif_start,motif_end,tag_start,tag_end,seq):
