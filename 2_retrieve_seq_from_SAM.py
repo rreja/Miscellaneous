@@ -9,7 +9,7 @@ def process_file(infile,options):
     variants = []
     outfile = os.path.join(os.path.dirname(infile),"motif_variation_information.txt")
     out = open(outfile,"w")
-    out.write("FIMO_motif_chr\tFIMO_motif_start\tFIMO_motif_strand\tMotif_from_fimo\tpvalue\tMotif_from_BAM\tCIGAR\tQuality\n")
+    out.write("FIMO_motif_chr\tFIMO_motif_start\tFIMO_motif_strand\tMotif_from_fimo\tpvalue\tMotif_from_BAM\tCIGAR\tQuality\tPositions\tAllele\n")
     input = open(infile,'rt')
     for line in input:
         if line.startswith("#"):
@@ -33,7 +33,7 @@ def process_file(infile,options):
     results = retrieve_seq_from_SAM(dict_fimo,options,out,outfile)
     variants = find_variation(results)
     for t in variants:
-        out.write(t)
+        out.write(t+"\n")
     print "Sucessfully written the output. Your output is in"+os.path.dirname(outfile)
 
 def find_variation(list1):
@@ -48,15 +48,23 @@ def find_variation(list1):
             
 def report_mismatch(refMotif,newMotif):
     counter = 1
+    positions = ""
+    allele = ""
     for i, j in zip(refMotif, newMotif):
         if i == j:
-            print i,j
+            counter = counter +1
             continue
         else:
-            print i,j,counter
+            positions = positions+str(counter)+","
+            allele = allele+i+"/"+j+","
         counter = counter +1
-    # All I ned to do here is return the position and the allele and then delete sys.exit from below.
-    sys.exit(1)
+    if positions == "" and allele == "":
+        return(".\t.")
+    else:
+        
+        rline = positions+"\t"+allele
+        return(rline)
+    
     
 def extract_fimo_motif(line):
     cols = line.rstrip().split(";")
