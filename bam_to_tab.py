@@ -2,14 +2,12 @@ import sys, os, re
 from optparse import OptionParser , IndentedHelpFormatter
 
 
-def process_file(fname,samfile,outfile):
+def process_file(fname,samfile,outfile,tmpfile):
     fwd = {}
     rev = {}
     list_all = []
     out = open(outfile,"w")
-    out.write("chrom\tindex\tforward\treverse\tvalue\n")
     os.system(" /usr/local/bin/bamToBed -i "+fname+" >"+samfile)
-    
     input = open(samfile,"rt")
     for line in input:
         tmp = line.rstrip().split("\t")
@@ -43,7 +41,10 @@ def process_file(fname,samfile,outfile):
             total = rev[val]
             out.write(val+"\t0\t"+str(rev[val])+"\t"+str(total)+"\n")
         out.flush()
-        
+    os.system("sort -k 1,1 -k 2,2n "+outfile+" >"+tmpfile)
+    os.system("mv "+tmpfile+" "+outfile)
+    print "Converted "+fname+" to "+outfile
+    #out.write("chrom\tindex\tforward\treverse\tvalue\n")
 
 
 usage = '''
@@ -86,8 +87,9 @@ def run():
                 continue
             fname = os.path.join(args[0], name)
             samfile = os.path.join(args[0], os.path.splitext(name)[0]+".bed")
-            outfile = os.path.join(outdir,os.path.splitext(name)[0]+".tab") 
-            process_file(fname,samfile,outfile)
+            outfile = os.path.join(outdir,os.path.splitext(name)[0]+".tab")
+            tmp = os.path.join(outdir,os.path.splitext(name)[0]+".tmp")
+            process_file(fname,samfile,outfile,tmp)
     
     
 if __name__ == "__main__":
