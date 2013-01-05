@@ -14,6 +14,7 @@ def process_file(fname,samfile,outfile,tmpfile):
         if int(tmp[4]) == 0:
             continue
         if tmp[5] == "+":
+            # BED file hence add to the start only.
             start = int(tmp[1]) + 1
             string = tmp[0]+"\t"+str(start)
             if string in fwd:
