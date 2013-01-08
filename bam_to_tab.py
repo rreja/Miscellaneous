@@ -5,7 +5,7 @@ from optparse import OptionParser , IndentedHelpFormatter
 def process_file(fname,samfile,outfile,tmpfile):
     fwd = {}
     rev = {}
-    list_all = []
+    list_all = {}
     out = open(outfile,"w")
     os.system(" /usr/local/bin/bamToBed -i "+fname+" >"+samfile)
     input = open(samfile,"rt")
@@ -22,7 +22,8 @@ def process_file(fname,samfile,outfile,tmpfile):
                 
             else:
                 fwd[string] = 1
-                list_all.append(string)
+                list_all[string] = 1
+                #list_all.append(string)
         elif tmp[5] == "-":
             string = tmp[0]+"\t"+tmp[2]
             if string in rev:
@@ -30,7 +31,8 @@ def process_file(fname,samfile,outfile,tmpfile):
                 
             else:
                 rev[string] = 1
-                list_all.append(string)            
+                #list_all.append(string)
+                list_all[string] = 1
     for val in list_all:
         if val in fwd and val in rev:
             total = fwd[val]+rev[val]
