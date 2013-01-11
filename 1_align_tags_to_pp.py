@@ -151,15 +151,15 @@ def process_files_tagStrand(idx,pp,options,output_folder,tmp_folder):
     Soutfile = os.path.join(output_folder,"sense_"+os.path.basename(idx).split(".")[0]+".cdt")
     Aoutfile = os.path.join(output_folder,"anti_"+os.path.basename(idx).split(".")[0]+".cdt")
     
-    if options.sort_by_pp_distance == 1:
-        Spp_out = os.path.join(output_folder,"sense_"+os.path.basename(idx).split(".")[0]+"_sorted_by_pp_dist.cdt")
-        App_out = os.path.join(output_folder,"anti_"+os.path.basename(idx).split(".")[0]+"_sorted_by_pp_dist.cdt")
-        S_pp = open(Spp_out,"w")
-        A_pp = open(App_out,"w")
-        print_header(S_pp,options)
-        print_header(A_pp,options)
-        Sdict_with_ppdist = {}
-        Adict_with_ppdist = {}
+    #if options.sort_by_pp_distance == 1:
+    #    Spp_out = os.path.join(output_folder,"sense_"+os.path.basename(idx).split(".")[0]+"_sorted_by_pp_dist.cdt")
+    #    App_out = os.path.join(output_folder,"anti_"+os.path.basename(idx).split(".")[0]+"_sorted_by_pp_dist.cdt")
+    #    S_pp = open(Spp_out,"w")
+    #    A_pp = open(App_out,"w")
+    #    print_header(S_pp,options)
+    #    print_header(A_pp,options)
+    #    Sdict_with_ppdist = {}
+    #    Adict_with_ppdist = {}
     
     Scdtout = open(Soutfile,"w")
     Acdtout = open(Aoutfile,"w")
@@ -203,10 +203,10 @@ def process_files_tagStrand(idx,pp,options,output_folder,tmp_folder):
         Stmpdict = {}
         Atmpdict = {}
         # Comment this line for total tag
-        Sline = k   #1
-        Aline = k    #2
-        #Sline = ""     #-1
-        #Aline = ""    #-2
+        #Sline = k   #1
+        #Aline = k    #2
+        Sline = ""     #-1
+        Aline = ""    #-2
         Stotaltag = 0
         Atotaltag = 0
         ## Check for "NA" values.
@@ -242,30 +242,33 @@ def process_files_tagStrand(idx,pp,options,output_folder,tmp_folder):
             else:
                 Aline = Aline+"\t0"
         # Comment this line for total tags.
-        Scdtout.write(Sline+"\n") #3
-        Acdtout.write(Aline+"\n") #4
-        #Sdict_with_ttag[k.split("\t")[0]] = str(Stotaltag)+Sline  #-3
-        #Adict_with_ttag[k.split("\t")[0]] = str(Atotaltag)+Aline  #-4 
-        if options.sort_by_pp_distance == 1:
-            Sdict_with_ppdist[k] = Sline 
-            Adict_with_ppdist[k] = Aline
-    
-    #sort_and_print(Sdict_with_ttag,Adict_with_ttag,Scdtout,Acdtout) #-5
-    if options.sort_by_pp_distance == 1:
-        sort_by_peakpair_dist(Sdict_with_ppdist,Adict_with_ppdist,S_pp,A_pp)
-
-
-def sort_by_peakpair_dist(Sdict_with_ppdist,Adict_with_ppdist,Spp_out,App_out):
-    tmpdict = {}
-    for k,v in Sdict_with_ppdist.items():
-        tmp = k.split("\t")[1]
-        distance = int(tmp.split("=")[1])
-        tmpdict[k] = distance
-    sorted_x = sorted(tmpdict.iteritems(), key=itemgetter(1),reverse=True)
-    for j in sorted_x:
-        Spp_out.write(Sdict_with_ppdist[j[0]]+"\n")
-        App_out.write(Adict_with_ppdist[j[0]]+"\n")
+        #Scdtout.write(Sline+"\n") #3
+        #Acdtout.write(Aline+"\n") #4
+        Sdict_with_ttag[k.split("\t")[0]] = str(Stotaltag)+Sline  #-3
+        Adict_with_ttag[k.split("\t")[0]] = str(Atotaltag)+Aline  #-4
         
+        ###if options.sort_by_pp_distance == 1:
+        ###    Sdict_with_ppdist[k] = Sline 
+        ###    Adict_with_ppdist[k] = Aline
+    
+    sort_and_print(Sdict_with_ttag,Adict_with_ttag,Scdtout,Acdtout) #-5
+
+    
+##    #if options.sort_by_pp_distance == 1:
+##    #    sort_by_peakpair_dist(Sdict_with_ppdist,Adict_with_ppdist,S_pp,A_pp)
+##
+##
+###def sort_by_peakpair_dist(Sdict_with_ppdist,Adict_with_ppdist,Spp_out,App_out):
+###    tmpdict = {}
+###    for k,v in Sdict_with_ppdist.items():
+###        tmp = k.split("\t")[1]
+###        distance = int(tmp.split("=")[1])
+###        tmpdict[k] = distance
+###    sorted_x = sorted(tmpdict.iteritems(), key=itemgetter(1),reverse=True)
+###    for j in sorted_x:
+###        Spp_out.write(Sdict_with_ppdist[j[0]]+"\n")
+###        App_out.write(Adict_with_ppdist[j[0]]+"\n")
+###        
         
         
 def sort_and_print(Sdicti,Adicti,Sout,Aout):
@@ -316,8 +319,8 @@ def run():
                       help='Directory containing BedTools.Default="/usr/local/bin"')
     parser.add_option('-s', action='store', type='int', dest='tagStrand',default=0,
                       help='1=> Consider tag strandedness only. 0=> Do not consider any strandedness.Default=0')
-    parser.add_option('-p', action='store', type='int', dest='sort_by_pp_distance',default=0,
-                      help='1 => Sort the CDT file based on peak-pair distances [Low->High]. tags.0 => No sorting.Default=0. Only works when -s = 1')
+    #parser.add_option('-p', action='store', type='int', dest='sort_by_pp_distance',default=0,
+    #                  help='1 => Sort the CDT file based on peak-pair distances [Low->High]. tags.0 => No sorting.Default=0. Only works when -s = 1')
     
     (options, args) = parser.parse_args()
         
