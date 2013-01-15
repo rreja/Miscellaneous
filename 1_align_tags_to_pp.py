@@ -143,8 +143,8 @@ def process_files_tagStrand(idx,pp,options,output_folder,tmp_folder):
     StmpInter = os.path.join(tmp_folder,"Stmpintersect.txt")
     AtmpInter = os.path.join(tmp_folder,"Atmpintersect.txt")
     intersect = os.path.join(options.bedDir,"intersectBed")
-    call(intersect+" -wo -a "+tmpPP+" -b "+sense_tmpidx+" >"+StmpInter,shell=True)
-    call(intersect+" -wo -a "+tmpPP+" -b "+anti_tmpidx+" >"+AtmpInter,shell=True)
+    call(intersect+" -wao -a "+tmpPP+" -b "+sense_tmpidx+" >"+StmpInter,shell=True)
+    call(intersect+" -wao -a "+tmpPP+" -b "+anti_tmpidx+" >"+AtmpInter,shell=True)
     
     print "INFO: Creating CDT file"
     # Creating CDT file from this tempintersect file.
@@ -220,10 +220,14 @@ def process_files_tagStrand(idx,pp,options,output_folder,tmp_folder):
                 Atotaltag = Atotaltag + 0
         #################################################        
         for val in v:
+            if val == "NA":
+                continue
             pos = int(val.split(":")[0])
             tag = (val.split(":"))[1]
             Stmpdict[pos] = tag
         for val in Acdt_dict[k]:
+            if val == "NA":
+                continue
             pos = int(val.split(":")[0])
             tag = (val.split(":"))[1]
             Atmpdict[pos] = tag
